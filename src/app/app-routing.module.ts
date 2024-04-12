@@ -19,8 +19,10 @@ const routes: Routes = [
     component: ContactPageComponent,
   },
   {
+    //? Asigna un path para cargar el modulo countries
     path: 'countries',
-    component: ContactPageComponent,
+    //? Esto es para importar las rutas de otro modulo como rutas hijas El import actúa como una promesa, que accede al path del modulo que se quiere cargar Notese que se importa el modulo principal, porque ese ya importa el modulo de rutas*/
+    loadChildren: () => import('./countries/countries.module').then((m) => m.CountriesModule) //La m hace referencia al modulo y desde ahi carga el CountriesModule
   },
   {
     path: '**',
