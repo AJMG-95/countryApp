@@ -23,6 +23,10 @@ export class CountriesService {
       );
   }
 
+  searchCountryByAlphaCode(query: string): Observable<Country[]> {
+    return this.search(query, 'alpha');
+  }
+
   searchCountry(query: string): Observable<Country[]> {
     return this.search(query, 'name');
   }
