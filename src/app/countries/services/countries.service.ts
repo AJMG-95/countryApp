@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, of } from "rxjs";
+import { Observable, catchError, delay, map, of } from "rxjs";
 import { Country } from "../interfaces/country";
 
 @Injectable({ providedIn: 'root' })
@@ -12,17 +12,6 @@ export class CountriesService {
   constructor(private http: HttpClient) { };
 
 
-  search(query: string, searchType: string): Observable<Country[]> {
-    const url = `${this.apiUrl}/${searchType}/${query}`;
-    return this.http.get<Country[]>(url)
-      .pipe(
-        catchError(error => {
-          console.log(error);
-          return of([]);
-        }) // Captura el error y devuelve un array vacío
-      );
-  }
-
   searchCountryByAlphaCode(query: string): Observable<Country | null> {
     const url = `${this.apiUrl}/alpha/${query}`;
     return this.http.get<Country[]>(url)
@@ -31,6 +20,16 @@ export class CountriesService {
         catchError(() => of(null))
       );
   }
+
+  private search(query: string, searchType: string): Observable<Country[]> {
+    const url = `${this.apiUrl}/${searchType}/${query}`;
+    return this.http.get<Country[]>(url)
+      .pipe(
+        catchError(() => of([])), // Captura el error y devuelve un array vacío
+        delay(1000), //Para poder probar un loading
+      );
+  }
+
 
   searchCountry(query: string): Observable<Country[]> {
     return this.search(query, 'name');
@@ -44,41 +43,4 @@ export class CountriesService {
     return this.search(query, 'region');
   }
 
-
-
-
-  /*   searchCountry(query: string): Observable<Country[]> {
-      const url = `${this.apiUrl}/name/${query}`;
-      return this.http.get<Country[]>(url)
-        .pipe(
-          catchError(error => {
-            console.log(error);
-            return of([])
-          }) //Captura el error y en lugar de devolver el error devuelve un array vacío
-        );
-    }
-
-    searchCapitals(query: string): Observable<Country[]> {
-      const url = `${this.apiUrl}/capital/${query}`;
-      return this.http.get<Country[]>(url)
-        .pipe(
-          catchError(error => {
-            console.log(error);
-            return of([])
-          }) //Captura el error y en lugar de devolver el error devuelve un array vacío
-        );
-    }
-
-    searchRegion(query: string): Observable<Country[]> {
-      const url = `${this.apiUrl}/region/${query}`;
-      return this.http.get<Country[]>(url)
-        .pipe(
-          catchError(error => {
-            console.log(error);
-            return of([])
-          }) //Captura el error y en lugar de devolver el error devuelve un array vacío
-        );
-    }
-
-   */
 }
