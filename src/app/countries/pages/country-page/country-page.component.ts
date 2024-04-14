@@ -14,6 +14,8 @@ export class CountryPageComponent implements OnInit {
 
   public country?: Country;
 
+  public isLoading: boolean = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -21,15 +23,25 @@ export class CountryPageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.activatedRoute.params
       .pipe(
         switchMap(({ id }) => this.countriesService.searchCountryByAlphaCode(id))
       )
-      .subscribe(country => {
-        if (!country) return this.router.navigateByUrl('');
-        return this.country = country;
+      .subscribe({
+        next: country => {
+          if (!country) return this.router.navigateByUrl('');
+          return this.country = country;
+        },
+        error: err => {
+          // Manejar errores aquí
+        },
+        complete: () => {
+          this.isLoading = false; // Establecer isLoading en false cuando la petición ha finalizado
+        }
       });
   }
+
 
 
 }

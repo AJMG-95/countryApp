@@ -11,10 +11,12 @@ import { Country } from '../../interfaces/country';
 export class ByCapitalPageComponent {
 
   public countries: Country[] = [];
+  public isLoading: boolean = false;
 
   constructor(private countriesService: CountriesService) { }
 
   searchByCapital(term: string): void {
+    this.isLoading = true;
     this.countriesService.searchCapitals(term).subscribe({
       next: countries => {
         this.countries = countries
@@ -23,7 +25,7 @@ export class ByCapitalPageComponent {
 
       },
       complete: () => {
-
+        this.isLoading = false; // Establecer isLoading en false cuando la llamada ha finalizado
       },
     });
   }
