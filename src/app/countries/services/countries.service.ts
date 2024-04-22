@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, delay, map, of } from "rxjs";
+import { Observable, catchError, delay, map, of, tap } from "rxjs";
 import { Country } from "../interfaces/country.interface";
 import { CacheStore } from "../interfaces/cache-store.interface";
 
@@ -20,8 +20,8 @@ export class CountriesService {
   };
 
 
-  searchCountryByAlphaCode(query: string): Observable<Country | null> {
-    const url = `${this.apiUrl}/alpha/${query}`;
+  searchCountryByAlphaCode(term: string): Observable<Country | null> {
+    const url = `${this.apiUrl}/alpha/${term}`;
     return this.http.get<Country[]>(url)
       .pipe(
         map(countries => countries.length > 0 ? countries[0] : null),
@@ -29,8 +29,8 @@ export class CountriesService {
       );
   }
 
-  private search(query: string, searchType: string): Observable<Country[]> {
-    const url = `${this.apiUrl}/${searchType}/${query}`;
+  private search(term: string, searchType: string): Observable<Country[]> {
+    const url = `${this.apiUrl}/${searchType}/${term}`;
     return this.http.get<Country[]>(url)
       .pipe(
         catchError(() => of([])), // Captura el error y devuelve un array vacío
@@ -38,16 +38,22 @@ export class CountriesService {
   }
 
 
-  searchCountry(query: string): Observable<Country[]> {
-    return this.search(query, 'name');
+  searchCountry(term: string): Observable<Country[]> {
+    return this.search(term, 'name')
+      .pipe(
+        tap(countries => this.cacheStorage.byCountries = { term, countries })
+      );
   }
 
-  searchCapitals(query: string): Observable<Country[]> {
-    return this.search(query, 'capital');
+  searchCapitals(term: string): Observable<Country[]> {
+    return this.search(term, 'capital')
+      .pipe(
+        tap(countries => this.cacheStorage.byCapital = { term, countries })
+      );
   }
 
-  searchRegion(query: string): Observable<Country[]> {
-    return this.search(query, 'region');
+  searchRegion(term: string): Observable<Country[]> {
+    return this.search(term, 'region');
   }
 
 }

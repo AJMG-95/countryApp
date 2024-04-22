@@ -1,11 +1,11 @@
 <h2>Por región</h2>
 <hr>
 <div class="row">
-  <div id="region-list" class="col text-center py-2">
+  <div id="region-list" class="col text-center py-2 border rounded border-dark-subtle">
     <!-- SearchBox -->
     <button *ngFor="let region of regions"
-      [ngClass]=" {'btn-outline-primary border-black text-uppercase':selectedRegion === region} "
-      class="btn rounded-1 mx-2 bg-light" (click)="searchByRegion(region)">
+      [ngClass]=" {'btn-outline-primary border-black text-uppercase bg-blue':selectedRegion === region} "
+      class="btn rounded-1 mx-2 btn-secondary" (click)="searchByRegion(region)">
       {{ region }}
     </button>
 
